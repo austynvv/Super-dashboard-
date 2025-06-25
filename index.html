@@ -2,47 +2,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TFSA Intelligence Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: white; padding: 20px; }
-        h1 { color: #00ff99; }
-        .section { margin-bottom: 40px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .label { font-weight: bold; color: #00ff99; }
-    </style>
+  <meta charset="UTF-8">
+  <title>TFSA Intelligence Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #0d1117; color: #f0f6fc; padding: 2em; }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      width: fit-content;
+    }
+    .title {
+      font-size: 1.5em;
+      margin-bottom: 0.5em;
+      color: #58a6ff;
+    }
+    .note {
+      font-size: 0.9em;
+      color: #8b949e;
+    }
+  </style>
 </head>
 <body>
-    <h1>TFSA Intelligence Dashboard</h1>
+  <div class="title">TFSA Intelligence Dashboard</div>
 
-    <div class="section">
-        <div class="card">
-            <div class="label">📈 Options Trade Reference (NVDA)</div>
-            <p><strong>Buy:</strong> NVDA Jun 27 $152.50 Call @ $1.42 USD</p>
-            <p><strong>Sell:</strong> NVDA Jun 27 $152.50 Call @ $2.00 USD</p>
-            <p><strong>Profit:</strong> ~$800.41 CAD</p>
-            <p><strong>Status:</strong> Completed, Used for Future Backtests</p>
-        </div>
+  <div class="card">
+    <strong>NVIDIA (NVDA)</strong><br>
+    Live Price: <span id="nvda-price">Loading...</span>
+  </div>
 
-        <div class="card">
-            <div class="label">📊 Strategy Focus</div>
-            <p>High-conviction options calls</p>
-            <p>Strong technicals: RSI, MACD, support/resistance</p>
-            <p>Target sectors: Tech, Banking, Oil</p>
-            <p>Use options data, volume, and sentiment to trigger entries</p>
-        </div>
+  <div class="note">Auto-refreshing every 5 seconds using Alpha Vantage API</div>
 
-        <div class="card">
-            <div class="label">🧠 Dashboard Purpose</div>
-            <p>Monitor TFSA portfolio for:</p>
-            <ul>
-                <li>Options trade setups</li>
-                <li>Rebalancing signals</li>
-                <li>Sector overweights</li>
-                <li>Geo-risk hedges</li>
-            </ul>
-        </div>
-    </div>
+  <script>
+    async function getLivePrice(symbol) {
+      try {
+        const res = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=demo`);
+        const data = await res.json();
+        const price = data["Global Quote"]["05. price"];
+        document.getElementById("nvda-price").innerText = price ? "$" + parseFloat(price).toFixed(2) : "Unavailable";
+      } catch (e) {
+        document.getElementById("nvda-price").innerText = "Error fetching data";
+      }
+    }
+
+    getLivePrice("NVDA");
+    setInterval(() => getLivePrice("NVDA"), 5000);
+  </script>
 </body>
 </html>
